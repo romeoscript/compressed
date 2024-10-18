@@ -5,6 +5,7 @@ use flate2::write::GzEncoder;
 use std::fs::File;
 use std::env;
 use std::io::{self, BufReader, BufWriter, Read};
+use std::time::Instant;
 
 
 fn main()-> io::Result<()> {
@@ -25,11 +26,13 @@ fn main()-> io::Result<()> {
     let writer = BufWriter::new(output);
 
     let mut encoder = GzEncoder::new(writer, Compression::default());
+    let start = Instant::now();
 
     io::copy(&mut reader.take(u64::MAX), &mut encoder)?;
 
     encoder.finish()?;
+    let duration = start.elapsed();
 
-    println!("File compressed successfully!");
+    println!("File compressed successfully!: {:?}", duration);
     Ok(())
 }
